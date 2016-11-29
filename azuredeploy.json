@@ -145,7 +145,7 @@
 		"feNICName" : "feNIC",
 		"edgeBENICName" : "edgeBENIC",
 		"edgeFENICName" : "edgeFENIC",
-		"wacNICName : "wacNIC",
+		"wacNICName" : "wacNIC",
 		"dcPIPName" : "dcPublicIP",
 		"fePIPName" : "fePublicIP",
 		"edgePIPName" : "edgePublicIP",
