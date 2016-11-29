@@ -29,14 +29,14 @@
 				"description" : "The size of the virtual machine"
 			}
 		},
-		"adminDNSVMName": {
+		"feDNSVMName": {
 			"type" : "string",
 			"defaultValue" : "sfbfe01",
 			"metadata" : {
 				"description" : "Unique DNS prefix for the ADMIN machine"
 			}
 		},
-		"adminVMSize" : {
+		"feVMSize" : {
 			"type" : "string",
 			"defaultValue" : "Standard_D2",
 			"metadata" : {
@@ -57,14 +57,14 @@
 				"description" : "The size of the virtual machine"
 			}
 		},
-		"syncDNSVMName": {
+		"wacDNSVMName": {
 			"type" : "string",
 			"defaultValue" : "sfbwac01",
 			"metadata" : {
 				"description" : "Unique DNS prefix for the SYNC machine"
 			}
 		},
-		"syncVMSize" : {
+		"wacVMSize" : {
 			"type" : "string",
 			"defaultValue" : "Standard_D2",
 			"metadata" : {
@@ -199,7 +199,7 @@
 			"properties" : {
 				"publicIPAllocationMethod" : "Dynamic",
 				"dnsSettings" : {
-					"domainNameLabel" : "[parameters('adminDNSVMName')]"
+					"domainNameLabel" : "[parameters('feDNSVMName')]"
 				}
 			}
 		}, {
@@ -221,7 +221,7 @@
 			"properties" : {
 				"publicIPAllocationMethod" : "Dynamic",
 				"dnsSettings" : {
-					"domainNameLabel" : "[parameters('syncDNSVMName')]"
+					"domainNameLabel" : "[parameters('wacDNSVMName')]"
 				}
 			}
 		}, {
@@ -556,7 +556,7 @@
 			],
 			"properties" : {
 				"hardwareProfile" : {
-					"vmSize" : "[parameters('adminVMSize')]"
+					"vmSize" : "[parameters('feVMSize')]"
 				},
 				"osProfile" : {
 					"computerName" : "[variables('feVMName')]",
@@ -799,7 +799,7 @@
 			],
 			"properties" : {
 				"hardwareProfile" : {
-					"vmSize" : "[parameters('syncVMSize')]"
+					"vmSize" : "[parameters('wacVMSize')]"
 				},
 				"osProfile" : {
 					"computerName" : "[variables('wacVMName')]",
