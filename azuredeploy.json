@@ -198,7 +198,7 @@
 			"properties" : {
 				"publicIPAllocationMethod" : "Dynamic",
 				"dnsSettings" : {
-					"domainNameLabel" : "[parameters('adminDNSVMName')]"
+					"domainNameLabel" : "[parameters('feDNSVMName')]"
 				}
 			}
 		}, {
@@ -220,7 +220,7 @@
 			"properties" : {
 				"publicIPAllocationMethod" : "Dynamic",
 				"dnsSettings" : {
-					"domainNameLabel" : "[parameters('syncDNSVMName')]"
+					"domainNameLabel" : "[parameters('wacDNSVMName')]"
 				}
 			}
 		}, {
