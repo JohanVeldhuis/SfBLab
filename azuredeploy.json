@@ -124,61 +124,63 @@
 			"defaultValue": "https://raw.githubusercontent.com/JohanVeldhuis/SfBLab/master/"
 		}
 	},
-	"variables" : {
-		"dcVMName": "dc01",
-		"feVMName": "fe01",
-		"edgeVMName": "edge01",
-		"wacVMName": "wac01",
-		"dcStorageAccountName" : "[concat(uniquestring(resourceGroup().id), variables('dcVMName'))]",
-		"feStorageAccountName" : "[concat(uniquestring(resourceGroup().id), variables('feVMName'))]",
-		"edgeStorageAccountName" : "[concat(uniquestring(resourceGroup().id), variables('edgeVMName'))]",
-		"wacStorageAccountName" : "[concat(uniquestring(resourceGroup().id), variables('wacVMName'))]",
-		"imagePublisher" : "MicrosoftWindowsServer",
-		"imageOffer" : "WindowsServer",
-		"imageSKU" : "2012-R2-Datacenter",
-		"apiVersion" : "2015-06-15",
-		"virtualNetworkName" : "labVNet",
-		"feSubnetName" : "feSubnet",
-		"labSubnetName" : "labSubnet",
-		"dcNICName" : "dcNIC",
-		"feNICName" : "adminNIC",
-		"edgeBENICName" : "edgeBENIC",
-		"edgeFENICName" : "edgeFENIC",
-		"wacNICName" : "syncNIC",
-		"dcPIPName" : "dcPublicIP",
-		"fePIPName" : "fePublicIP",
-		"edgePIPName" : "edgePublicIP",
-		"wacPIPName" : "wacPublicIP",
-		"virtualNetworkAddressRange" : "192.168.0.0/16",
-		"labSubnet" : "192.168.10.0/24",
-		"feSubnet" : "192.168.200.0/24",
-		"dcBEIP": "192.168.10.4",
-		"feBEIP": "192.168.10.20", 
-		"edgeBEIP": "192.168.10.254",
-		"edgeFEIP": "192.168.200.4",
-		"wacBEIP": "192.168.10.10",
-		"vnetID" : "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
-		"feSubnetId" : "[concat(variables('vnetID'),'/subnets/', variables('feSubnetName'))]",
-		"labSubnetId" : "[concat(variables('vnetID'),'/subnets/', variables('labSubnetName'))]",
-		"dcDataDisk" : "dcDataDisk",
-		"dcDataDiskSize" : 1000,
-		"vnetTemplateUri" : "[concat(parameters('assetLocation'),'vnet.json')]",
-		"vnetwithDNSTemplateUri" : "[concat(parameters('assetLocation'),'vnet-with-dns-server.json')]",
-		"dcModulesURL" : "[concat(parameters('assetLocation'),'CreateADPDC.ps1.zip')]",
-		"dcConfigurationFunction" : "CreateADPDC.ps1\\CreateADPDC",
-		"dcCustomScriptFileToRun" : "ConfigDC.ps1",
-		"dcCustomScriptFileUri" : "[concat(parameters('assetLocation'), variables('dcCustomScriptFileToRun'))]",
-		"dcCommandToExecute" : "[concat('powershell.exe -File', ' ', variables('dcCustomScriptFileToRun'))]",
-		"feCustomScriptFileToRun" : "ConfigFE.ps1",
-		"feCustomScriptFileUri" : "[concat(parameters('assetLocation'), variables('feCustomScriptFileToRun'))]",
-		"feCommandToExecute" : "[concat('powershell.exe -File', ' ', variables('feCustomScriptFileToRun'))]",
-		"edgeCustomScriptFileToRun" : "ConfigEdge.ps1",
-		"edgeCustomScriptFileUri" : "[concat(parameters('assetLocation'), variables('edgeCustomScriptFileToRun'))]",
-		"edgeCommandToExecute" : "[concat('powershell.exe -File', ' ', variables('edgeCustomScriptFileToRun'))]",
-		"wacCustomScriptFileToRun" : "ConfigWAC.ps1",
-		"wacCustomScriptFileUri" : "[concat(parameters('assetLocation'), variables('wacCustomScriptFileToRun'))]",
-		"wacCommandToExecute" : "[concat('powershell.exe -File', ' ', variables('wacCustomScriptFileToRun'))]"
-	},
+  "variables": {
+    "dcVMName": "dc01",
+    "feVMName": "fe01",
+    "edgeVMName": "edge01",
+    "wacVMName": "wac01",
+    "dcStorageAccountName": "[concat(uniquestring(resourceGroup().id), variables('dcVMName'))]",
+    "feStorageAccountName": "[concat(uniquestring(resourceGroup().id), variables('feVMName'))]",
+    "edgeStorageAccountName": "[concat(uniquestring(resourceGroup().id), variables('edgeVMName'))]",
+    "wacStorageAccountName": "[concat(uniquestring(resourceGroup().id), variables('wacVMName'))]",
+    "imagePublisher": "MicrosoftWindowsServer",
+    "imageOffer": "WindowsServer",
+    "imageSKU": "2012-R2-Datacenter",
+    "apiVersion": "2015-06-15",
+    "virtualNetworkName": "labVNet",
+    "feSubnetName": "feSubnet",
+    "labSubnetName": "labSubnet",
+    "dcNICName": "dcNIC",
+    "feNICName": "adminNIC",
+    "edgeBENICName": "edgeBENIC",
+    "edgeFENICName": "edgeFENIC",
+    "wacNICName": "syncNIC",
+    "dcPIPName": "dcPublicIP",
+    "fePIPName": "fePublicIP",
+    "edgePIPName": "edgePublicIP",
+    "wacPIPName": "wacPublicIP",
+    "virtualNetworkAddressRange": "192.168.0.0/16",
+    "labSubnet": "192.168.10.0/24",
+    "feSubnet": "192.168.200.0/24",
+    "dcBEIP": "192.168.10.4",
+    "feBEIP": "192.168.10.20",
+    "edgeBEIP": "192.168.10.254",
+    "edgeFEIP": "192.168.200.4",
+    "wacBEIP": "192.168.10.10",
+    "vnetID": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
+    "feSubnetId": "[concat(variables('vnetID'),'/subnets/', variables('feSubnetName'))]",
+    "labSubnetId": "[concat(variables('vnetID'),'/subnets/', variables('labSubnetName'))]",
+    "dcDataDisk": "dcDataDisk",
+    "dcDataDiskSize": 250,
+    "feDataDisk": "feDataDisk",
+    "feDataDiskSize": 100,
+    "vnetTemplateUri": "[concat(parameters('assetLocation'),'vnet.json')]",
+    "vnetwithDNSTemplateUri": "[concat(parameters('assetLocation'),'vnet-with-dns-server.json')]",
+    "dcModulesURL": "[concat(parameters('assetLocation'),'CreateADPDC.ps1.zip')]",
+    "dcConfigurationFunction": "CreateADPDC.ps1\\CreateADPDC",
+    "dcCustomScriptFileToRun": "ConfigDC.ps1",
+    "dcCustomScriptFileUri": "[concat(parameters('assetLocation'), variables('dcCustomScriptFileToRun'))]",
+    "dcCommandToExecute": "[concat('powershell.exe -File', ' ', variables('dcCustomScriptFileToRun'))]",
+    "feCustomScriptFileToRun": "ConfigFE.ps1",
+    "feCustomScriptFileUri": "[concat(parameters('assetLocation'), variables('feCustomScriptFileToRun'))]",
+    "feCommandToExecute": "[concat('powershell.exe -File', ' ', variables('feCustomScriptFileToRun'))]",
+    "edgeCustomScriptFileToRun": "ConfigEdge.ps1",
+    "edgeCustomScriptFileUri": "[concat(parameters('assetLocation'), variables('edgeCustomScriptFileToRun'))]",
+    "edgeCommandToExecute": "[concat('powershell.exe -File', ' ', variables('edgeCustomScriptFileToRun'))]",
+    "wacCustomScriptFileToRun": "ConfigWAC.ps1",
+    "wacCustomScriptFileUri": "[concat(parameters('assetLocation'), variables('wacCustomScriptFileToRun'))]",
+    "wacCommandToExecute": "[concat('powershell.exe -File', ' ', variables('wacCustomScriptFileToRun'))]"
+  },
   "resources": [
     {
       "type": "Microsoft.Network/publicIPAddresses",
@@ -557,7 +559,7 @@
             "publisher": "Microsoft.Compute",
             "type": "CustomScriptExtension",
             "typeHandlerVersion": "1.3",
-            "autoUpgradeMinorVersion": "true",
+            "autoUpgradeMinorVersion": true,
             "settings": {
               "fileUris": [
                 "[variables('dcCustomScriptFileUri')]"
@@ -601,7 +603,19 @@
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
-          }
+          },
+          "dataDisks": [
+            {
+              "vhd": {
+                "uri": "[concat('http://',variables('feStorageAccountName'),'.blob.core.windows.net/vhds/', variables('feDataDisk'),'-1.vhd')]"
+              },
+              "name": "[concat(variables('feVMName'),'-data-disk1')]",
+              "caching": "None",
+              "createOption": "Empty",
+              "diskSizeGB": "[variables('feDataDiskSize')]",
+              "lun": 0
+            }
+          ]
         },
         "networkProfile": {
           "networkInterfaces": [
@@ -679,7 +693,7 @@
             "publisher": "Microsoft.Compute",
             "type": "CustomScriptExtension",
             "typeHandlerVersion": "1.3",
-            "autoUpgradeMinorVersion": "true",
+            "autoUpgradeMinorVersion": true,
             "settings": {
               "fileUris": [
                 "[variables('feCustomScriptFileUri')]"
@@ -810,7 +824,7 @@
             "publisher": "Microsoft.Compute",
             "type": "CustomScriptExtension",
             "typeHandlerVersion": "1.3",
-            "autoUpgradeMinorVersion": "true",
+            "autoUpgradeMinorVersion": true,
             "settings": {
               "fileUris": [
                 "[variables('edgeCustomScriptFileUri')]"
@@ -933,7 +947,7 @@
             "publisher": "Microsoft.Compute",
             "type": "CustomScriptExtension",
             "typeHandlerVersion": "1.3",
-            "autoUpgradeMinorVersion": "true",
+            "autoUpgradeMinorVersion": true,
             "settings": {
               "fileUris": [
                 "[variables('wacCustomScriptFileUri')]"
