@@ -491,37 +491,38 @@
 					]
 				}
 			},
-			"resources" : [{
-					"type" : "Microsoft.Compute/virtualMachines/extensions",
-					"name" : "[concat(variables('dcVMName'),'/createADForest')]",
-					"apiVersion" : "[variables('apiVersion')]",
-					"location" : "[resourceGroup().location]",
-					"dependsOn" : [
-						"[resourceId('Microsoft.Compute/virtualMachines', variables('dcVMName'))]"
-					],
-					"properties" : {
-						"publisher" : "Microsoft.Powershell",
-						"type" : "DSC",
-						"typeHandlerVersion" : "2.11",
-						"autoUpgradeMinorVersion" : true,
-						"settings" : {
-							"modulesUrl" : "[variables('dcModulesURL')]",
-							"configurationFunction" : "[variables('dcConfigurationFunction')]",
-							"Properties" : {
-								"DomainName" : "[parameters('domainName')]",
-								"AdminCreds" : {
-									"UserName" : "[parameters('domainUsername')]",
-									"Password" : "PrivateSettingsRef:AdminPassword"
-								}
-							}
-						},
-						"protectedSettings" : {
-							"Items" : {
-								"AdminPassword" : "[parameters('domainPassword')]"
-							}
-						
-					}
-				}, {		
+      "resources": [
+        {
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "name": "[concat(variables('dcVMName'),'/createADForest')]",
+          "apiVersion": "[variables('apiVersion')]",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Compute/virtualMachines', variables('dcVMName'))]"
+          ],
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.11",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "modulesUrl": "[variables('dcModulesURL')]",
+              "configurationFunction": "[variables('dcConfigurationFunction')]",
+              "Properties": {
+                "DomainName": "[parameters('domainName')]",
+                "AdminCreds": {
+                  "UserName": "[parameters('domainUsername')]",
+                  "Password": "PrivateSettingsRef:AdminPassword"
+                }
+              }
+            },
+            "protectedSettings": {
+              "Items": {
+                "AdminPassword": "[parameters('domainPassword')]"
+              }
+
+            }
+          },{		
 					"type" : "Microsoft.Compute/virtualMachines/extensions",
 					"name" : "[concat(variables('dcVMName'),'/RunAutomation')]",
 					"apiVersion" : "[variables('apiVersion')]",
@@ -534,7 +535,7 @@
 						"publisher" : "Microsoft.Compute",
 						"type" : "CustomScriptExtension",
 						"typeHandlerVersion" : "1.3",
-						"autoUpgradeMinorVersion" : true,
+						"autoUpgradeMinorVersion" : "true",
 						"settings" : {
 							"fileUris" : [
 								"[variables('dcCustomScriptFileUri')]"
@@ -545,408 +546,425 @@
 					}
 				}
 			]
-		}, {
-			"type" : "Microsoft.Compute/virtualMachines",
-			"name" : "[variables('feVMName')]",
-			"apiVersion" : "[variables('apiVersion')]",
-			"location" : "[resourceGroup().location]",
-			"dependsOn" : [
-				"[resourceId('Microsoft.Storage/storageAccounts',variables('adminStorageAccountName'))]",
-				"[resourceId('Microsoft.Network/networkInterfaces', variables('feNICName'))]"
-			],
-			"properties" : {
-				"hardwareProfile" : {
-					"vmSize" : "[parameters('feVMSize')]"
-				},
-				"osProfile" : {
-					"computerName" : "[variables('feVMName')]",
-					"adminUsername" : "[parameters('vmUserName')]",
-					"adminPassword" : "[parameters('vmPassword')]"
-				},
-				"storageProfile" : {
-					"imageReference" : {
-						"publisher" : "[variables('imagePublisher')]",
-						"offer" : "[variables('imageOffer')]",
-						"sku" : "[variables('imageSKU')]",
-						"version" : "latest"
-					},
-					"osDisk" : {
-						"name" : "osdisk",
-						"vhd" : {
-							"uri" : "[concat('http://',variables('adminStorageAccountName'),'.blob.core.windows.net/vhds/myvmosdisk.vhd')]"
-						},
-						"caching" : "ReadWrite",
-						"createOption" : "FromImage"
-					}
-				},
-				"networkProfile" : {
-					"networkInterfaces" : [{
-							"id" : "[resourceId('Microsoft.Network/networkInterfaces',variables('feNICName'))]"
-						}
-					]
-				},
-				"diagnosticsProfile" : {
-					"bootDiagnostics" : {
-						"enabled" : "true",
-						"storageUri" : "[concat('http://',variables('adminStorageAccountName'),'.blob.core.windows.net')]"
-					}
-				}
-			},
-			"resources" : [{
-					"type" : "Microsoft.Compute/virtualMachines/extensions",
-					"name" : "[concat(variables('feVMName'),'/joinDomain')]",
-					"apiVersion" : "[variables('apiVersion')]",
-					"location" : "[resourceGroup().location]",
-					"dependsOn" : [
-						"[concat('Microsoft.Compute/virtualMachines/', variables('feVMName'))]",
-						"[concat('Microsoft.Compute/virtualMachines/', variables('dcVMName'),'/extensions/createADForest')]"
-					],
-					"properties" : {
-						"publisher" : "Microsoft.Compute",
-						"type" : "JsonADDomainExtension",
-						"typeHandlerVersion" : "1.0",
-						"settings" : {
-							"Name" : "[parameters('domainName')]",
-							"OUPath" : "[parameters('ouPath')]",
-							"User" : "[concat(parameters('domainName'), '\\', parameters('domainUsername'))]",
-							"Restart" : "true",
-							"Options" : "[parameters('domainJoinOptions')]"
-						},
-						"protectedsettings" : {
-							"Password" : "[parameters('domainPassword')]"
-						}
-					}
-				}, {		
-					"type" : "Microsoft.Compute/virtualMachines/extensions",
-					"name" : "[concat(variables('feVMName'),'/getlabfiles')]",
-					"apiVersion" : "[variables('apiVersion')]",
-					"location" : "[resourceGroup().location]",
-					"dependsOn" : [
-						"[concat('Microsoft.Compute/virtualMachines/', variables('feVMName'))]",
-						"[concat('Microsoft.Compute/virtualMachines/', variables('feVMName'), '/extensions/joinDomain')]"
-					],
-					"properties" : {
-						"publisher" : "Microsoft.Powershell",
-						"type" : "DSC",
-						"typeHandlerVersion" : "2.8",
-						"settings" : {
-							"ModulesUrl" : "[concat(parameters('assetLocation'),'getlabfiles.zip')]",
-							"ConfigurationFunction" : "getlabfiles.ps1\\getlabfiles",
-							"Properties" : {
-								"MachineName" : "[variables('feVMName')]"
-							}
-						},
-						"protectedSettings" : null
-					}
-				}, {		
-					"type" : "Microsoft.Compute/virtualMachines/extensions",
-					"name" : "[concat(variables('feVMName'),'/RunAutomation')]",
-					"apiVersion" : "[variables('apiVersion')]",
-					"location" : "[resourceGroup().location]",
-					"dependsOn" : [
-						"[concat('Microsoft.Compute/virtualMachines/', variables('feVMName'))]",
-						"[concat('Microsoft.Compute/virtualMachines/', variables('feVMName'), '/extensions/getlabfiles')]"
-					],
-					"properties" : {
-						"publisher" : "Microsoft.Compute",
-						"type" : "CustomScriptExtension",
-						"typeHandlerVersion" : "1.3",
-						"autoUpgradeMinorVersion" : true,
-						"settings" : {
-							"fileUris" : [
-								"[variables('adminCustomScriptFileUri')]"
-							],
-							"commandToExecute" : "[variables('adminCommandToExecute')]"
-						},
-						"protectedSettings" : null
-					}
-				} 
-			]
-		}, {
-			"type" : "Microsoft.Compute/virtualMachines",
-			"name" : "[variables('edgeVMName')]",
-			"apiVersion" : "[variables('apiVersion')]",
-			"location" : "[resourceGroup().location]",
-			"dependsOn" : [
-				"[resourceId('Microsoft.Storage/storageAccounts',variables('edgestorageAccountName'))]",
-				"[resourceId('Microsoft.Network/networkInterfaces', variables('edgeFENICName'))]",
-				"[resourceId('Microsoft.Network/networkInterfaces', variables('edgeBENICName'))]"
-			],
-			"properties" : {
-				"hardwareProfile" : {
-					"vmSize" : "[parameters('edgeVMSize')]"
-				},
-				"osProfile" : {
-					"computerName" : "[variables('edgeVMName')]",
-					"adminUsername" : "[parameters('vmUserName')]",
-					"adminPassword" : "[parameters('vmPassword')]"
-				},
-				"storageProfile" : {
-					"imageReference" : {
-						"publisher" : "[variables('imagePublisher')]",
-						"offer" : "[variables('imageOffer')]",
-						"sku" : "[variables('imageSKU')]",
-						"version" : "latest"
-					},
-					"osDisk" : {
-						"name" : "osdisk",
-						"vhd" : {
-							"uri" : "[concat('http://',variables('edgestorageAccountName'),'.blob.core.windows.net/vhds/myvmosdisk.vhd')]"
-						},
-						"caching" : "ReadWrite",
-						"createOption" : "FromImage"
-					}
-				},
-				"networkProfile" : {
-					"networkInterfaces" : [{
-							"id" : "[resourceId('Microsoft.Network/networkInterfaces', variables('edgeFENICName'))]",
-							"properties" : {
-								"primary" : true
-							}
-						}, {
-							"id" : "[resourceId('Microsoft.Network/networkInterfaces', variables('edgeBENICName'))]",
-							"properties" : {
-								"primary" : false
-							}
-						}
-					]
-				},
-				"diagnosticsProfile" : {
-					"bootDiagnostics" : {
-						"enabled" : "true",
-						"storageUri" : "[concat('http://',variables('edgestorageAccountName'),'.blob.core.windows.net')]"
-					}
-				}
-			},
-			"resources" : [ {
-					"type" : "Microsoft.Compute/virtualMachines/extensions",
-					"name" : "[concat(variables('edgeVMName'),'/joinDomain')]",
-					"apiVersion" : "[variables('apiVersion')]",
-					"location" : "[resourceGroup().location]",
-					"dependsOn" : [
-						"[concat('Microsoft.Compute/virtualMachines/', variables('edgeVMName'))]",
-						"[concat('Microsoft.Compute/virtualMachines/', variables('dcVMName'),'/extensions/createADForest')]"
-					],
-					"properties" : {
-						"publisher" : "Microsoft.Compute",
-						"type" : "JsonADDomainExtension",
-						"typeHandlerVersion" : "1.0",
-						"settings" : {
-							"Name" : "[parameters('domainName')]",
-							"OUPath" : "[parameters('ouPath')]",
-							"User" : "[concat(parameters('domainName'), '\\', parameters('domainUsername'))]",
-							"Restart" : "true",
-							"Options" : "[parameters('domainJoinOptions')]"
-						},
-						"protectedsettings" : {
-							"Password" : "[parameters('domainPassword')]"
-						}
-					}
-				}, {		
-					"type" : "Microsoft.Compute/virtualMachines/extensions",
-					"name" : "[concat(variables('edgeVMName'),'/getlabfiles')]",
-					"apiVersion" : "[variables('apiVersion')]",
-					"location" : "[resourceGroup().location]",
-					"dependsOn" : [
-						"[concat('Microsoft.Compute/virtualMachines/', variables('edgeVMName'))]",
-						"[concat('Microsoft.Compute/virtualMachines/', variables('edgeVMName'), '/extensions/joinDomain')]"
-					],
-					"properties" : {
-						"publisher" : "Microsoft.Powershell",
-						"type" : "DSC",
-						"typeHandlerVersion" : "2.8",
-						"settings" : {
-							"ModulesUrl" : "[concat(parameters('assetLocation'),'getlabfiles.zip')]",
-							"ConfigurationFunction" : "getlabfiles.ps1\\getlabfiles",
-							"Properties" : {
-								"MachineName" : "[variables('edgeVMName')]"
-							}
-						},
-						"protectedSettings" : null
-					}
-				}, {		
-					"type" : "Microsoft.Compute/virtualMachines/extensions",
-					"name" : "[concat(variables('edgeVMName'),'/RunAutomation')]",
-					"apiVersion" : "[variables('apiVersion')]",
-					"location" : "[resourceGroup().location]",
-					"dependsOn" : [
-						"[concat('Microsoft.Compute/virtualMachines/', variables('edgeVMName'))]",
-						"[concat('Microsoft.Compute/virtualMachines/', variables('edgeVMName'), '/extensions/getlabfiles')]"
-					],
-					"properties" : {
-						"publisher" : "Microsoft.Compute",
-						"type" : "CustomScriptExtension",
-						"typeHandlerVersion" : "1.3",
-						"autoUpgradeMinorVersion" : true,
-						"settings" : {
-							"fileUris" : [
-								"[variables('edgeCustomScriptFileUri')]"
-							],
-							"commandToExecute" : "[variables('edgeCommandToExecute')]"
-						},
-						"protectedSettings" : null
-					}
-				}
+        },
+        {
+          "type": "Microsoft.Compute/virtualMachines",
+          "name": "[variables('feVMName')]",
+          "apiVersion": "[variables('apiVersion')]",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Storage/storageAccounts',variables('adminStorageAccountName'))]",
+            "[resourceId('Microsoft.Network/networkInterfaces', variables('feNICName'))]"
+          ],
+          "properties": {
+            "hardwareProfile": {
+              "vmSize": "[parameters('feVMSize')]"
+            },
+            "osProfile": {
+              "computerName": "[variables('feVMName')]",
+              "adminUsername": "[parameters('vmUserName')]",
+              "adminPassword": "[parameters('vmPassword')]"
+            },
+            "storageProfile": {
+              "imageReference": {
+                "publisher": "[variables('imagePublisher')]",
+                "offer": "[variables('imageOffer')]",
+                "sku": "[variables('imageSKU')]",
+                "version": "latest"
+              },
+              "osDisk": {
+                "name": "osdisk",
+                "vhd": {
+                  "uri": "[concat('http://',variables('adminStorageAccountName'),'.blob.core.windows.net/vhds/myvmosdisk.vhd')]"
+                },
+                "caching": "ReadWrite",
+                "createOption": "FromImage"
+              }
+            },
+            "networkProfile": {
+              "networkInterfaces": [
+                {
+                  "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('feNICName'))]"
+                }
               ]
-		}, {
-			"type" : "Microsoft.Compute/virtualMachines",
-			"name" : "[variables('wacVMName')]",
-			"apiVersion" : "[variables('apiVersion')]",
-			"location" : "[resourceGroup().location]",
-			"dependsOn" : [
-				"[resourceId('Microsoft.Storage/storageAccounts',variables('syncStorageAccountName'))]",
-				"[resourceId('Microsoft.Network/networkInterfaces', variables('wacNICName'))]"
-			],
-			"properties" : {
-				"hardwareProfile" : {
-					"vmSize" : "[parameters('wacVMSize')]"
-				},
-				"osProfile" : {
-					"computerName" : "[variables('wacVMName')]",
-					"adminUsername" : "[parameters('vmUserName')]",
-					"adminPassword" : "[parameters('vmPassword')]"
-				},
-				"storageProfile" : {
-					"imageReference" : {
-						"publisher" : "[variables('imagePublisher')]",
-						"offer" : "[variables('imageOffer')]",
-						"sku" : "[variables('imageSKU')]",
-						"version" : "latest"
-					},
-					"osDisk" : {
-						"name" : "osdisk",
-						"vhd" : {
-							"uri" : "[concat('http://',variables('syncStorageAccountName'),'.blob.core.windows.net/vhds/myvmosdisk.vhd')]"
-						},
-						"caching" : "ReadWrite",
-						"createOption" : "FromImage"
-					}
-				},
-				"networkProfile" : {
-					"networkInterfaces" : [{
-							"id" : "[resourceId('Microsoft.Network/networkInterfaces',variables('wacNICName'))]"
-						}
-					]
-				},
-				"diagnosticsProfile" : {
-					"bootDiagnostics" : {
-						"enabled" : "true",
-						"storageUri" : "[concat('http://',variables('syncStorageAccountName'),'.blob.core.windows.net')]"
-					}
-				}
-			},
-			"resources" : [{
-					"type" : "Microsoft.Compute/virtualMachines/extensions",
-					"name" : "[concat(variables('wacVMName'),'/joinDomain')]",
-					"apiVersion" : "[variables('apiVersion')]",
-					"location" : "[resourceGroup().location]",
-					"dependsOn" : [
-						"[concat('Microsoft.Compute/virtualMachines/', variables('wacVMName'))]",
-						"[concat('Microsoft.Compute/virtualMachines/', variables('dcVMName'),'/extensions/createADForest')]"
-					],
-					"properties" : {
-						"publisher" : "Microsoft.Compute",
-						"type" : "JsonADDomainExtension",
-						"typeHandlerVersion" : "1.0",
-						"settings" : {
-							"Name" : "[parameters('domainName')]",
-							"OUPath" : "[parameters('ouPath')]",
-							"User" : "[concat(parameters('domainName'), '\\', parameters('domainUsername'))]",
-							"Restart" : "true",
-							"Options" : "[parameters('domainJoinOptions')]"
-						},
-						"protectedsettings" : {
-							"Password" : "[parameters('domainPassword')]"
-						}
-					}
-				}, {		
-					"type" : "Microsoft.Compute/virtualMachines/extensions",
-					"name" : "[concat(variables('wacVMName'),'/getlabfiles')]",
-					"apiVersion" : "[variables('apiVersion')]",
-					"location" : "[resourceGroup().location]",
-					"dependsOn" : [
-						"[concat('Microsoft.Compute/virtualMachines/', variables('wacVMName'))]",
-						"[concat('Microsoft.Compute/virtualMachines/', variables('wacVMName'), '/extensions/joinDomain')]"
-					],
-					"properties" : {
-						"publisher" : "Microsoft.Powershell",
-						"type" : "DSC",
-						"typeHandlerVersion" : "2.8",
-						"settings" : {
-							"ModulesUrl" : "[concat(parameters('assetLocation'),'getlabfiles.zip')]",
-							"ConfigurationFunction" : "getlabfiles.ps1\\getlabfiles",
-							"Properties" : {
-								"MachineName" : "[variables('wacVMName')]"
-							}
-						},
-						"protectedSettings" : null
-					}
-				}, {		
-					"type" : "Microsoft.Compute/virtualMachines/extensions",
-					"name" : "[concat(variables('wacVMName'),'/RunAutomation')]",
-					"apiVersion" : "[variables('apiVersion')]",
-					"location" : "[resourceGroup().location]",
-					"dependsOn" : [
-						"[concat('Microsoft.Compute/virtualMachines/', variables('wacVMName'))]",
-						"[concat('Microsoft.Compute/virtualMachines/', variables('wacVMName'),'/extensions/getlabfiles')]"
-					],
-					"properties" : {
-						"publisher" : "Microsoft.Compute",
-						"type" : "CustomScriptExtension",
-						"typeHandlerVersion" : "1.3",
-						"autoUpgradeMinorVersion" : true,
-						"settings" : {
-							"fileUris" : [
-								"[variables('syncCustomScriptFileUri')]"
-							],
-							"commandToExecute" : "[variables('syncCommandToExecute')]"
-						},
-						"protectedSettings" : null
-					}
-				} 
-			]
-		}, {
-			"type" : "Microsoft.Resources/deployments",
-			"name" : "UpdateVNetDNS",
-			"apiVersion" : "2015-01-01",
-			"dependsOn" : [
-				"[concat('Microsoft.Compute/virtualMachines/', variables('dcVMName'),'/extensions/createADForest')]"
-			],
-			"properties" : {
-				"mode" : "Incremental",
-				"templateLink" : {
-					"uri" : "[variables('vnetwithDNSTemplateUri')]",
-					"contentVersion" : "1.0.0.0"
-				},
-				"parameters" : {
-					"location" : {
-						"value" : "[parameters('location')]"
-					},
-					"virtualNetworkName" : {
-						"value" : "[variables('virtualNetworkName')]"
-					},
-					"virtualNetworkAddressRange" : {
-						"value" : "[variables('virtualNetworkAddressRange')]"
-					},
-					"subnet1Name" : {
-						"value" : "[variables('feSubnetName')]"
-					},
-					"subnet1Range" : {
-						"value" : "[variables('feSubnet')]"
-					},
-					"subnet2Name" : {
-						"value" : "[variables('labSubnetName')]"
-					},
-					"subnet2Range" : {
-						"value" : "[variables('labSubnet')]"
-					},
-					"DNSServerAddress" : {
-						"value" : [
-							"[variables('dcBEIP')]"
-						]
-					}
-				}
-			}
-		}
-	]
+            },
+            "diagnosticsProfile": {
+              "bootDiagnostics": {
+                "enabled": "true",
+                "storageUri": "[concat('http://',variables('adminStorageAccountName'),'.blob.core.windows.net')]"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "name": "[concat(variables('feVMName'),'/joinDomain')]",
+              "apiVersion": "[variables('apiVersion')]",
+              "location": "[resourceGroup().location]",
+              "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('feVMName'))]",
+                "[concat('Microsoft.Compute/virtualMachines/', variables('dcVMName'),'/extensions/createADForest')]"
+              ],
+              "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "JsonADDomainExtension",
+                "typeHandlerVersion": "1.0",
+                "settings": {
+                  "Name": "[parameters('domainName')]",
+                  "OUPath": "[parameters('ouPath')]",
+                  "User": "[concat(parameters('domainName'), '\\', parameters('domainUsername'))]",
+                  "Restart": "true",
+                  "Options": "[parameters('domainJoinOptions')]"
+                },
+                "protectedsettings": {
+                  "Password": "[parameters('domainPassword')]"
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "name": "[concat(variables('feVMName'),'/getlabfiles')]",
+              "apiVersion": "[variables('apiVersion')]",
+              "location": "[resourceGroup().location]",
+              "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('feVMName'))]",
+                "[concat('Microsoft.Compute/virtualMachines/', variables('feVMName'), '/extensions/joinDomain')]"
+              ],
+              "properties": {
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.8",
+                "settings": {
+                  "ModulesUrl": "[concat(parameters('assetLocation'),'getlabfiles.zip')]",
+                  "ConfigurationFunction": "getlabfiles.ps1\\getlabfiles",
+                  "Properties": {
+                    "MachineName": "[variables('feVMName')]"
+                  }
+                },
+                "protectedSettings": null
+              }
+            },
+            {
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "name": "[concat(variables('feVMName'),'/RunAutomation')]",
+              "apiVersion": "[variables('apiVersion')]",
+              "location": "[resourceGroup().location]",
+              "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('feVMName'))]",
+                "[concat('Microsoft.Compute/virtualMachines/', variables('feVMName'), '/extensions/getlabfiles')]"
+              ],
+              "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.3",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                  "fileUris": [
+                    "[variables('adminCustomScriptFileUri')]"
+                  ],
+                  "commandToExecute": "[variables('adminCommandToExecute')]"
+                },
+                "protectedSettings": null
+              }
+            }
+          ]
+        },
+        {
+          "type": "Microsoft.Compute/virtualMachines",
+          "name": "[variables('edgeVMName')]",
+          "apiVersion": "[variables('apiVersion')]",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Storage/storageAccounts',variables('edgestorageAccountName'))]",
+            "[resourceId('Microsoft.Network/networkInterfaces', variables('edgeFENICName'))]",
+            "[resourceId('Microsoft.Network/networkInterfaces', variables('edgeBENICName'))]"
+          ],
+          "properties": {
+            "hardwareProfile": {
+              "vmSize": "[parameters('edgeVMSize')]"
+            },
+            "osProfile": {
+              "computerName": "[variables('edgeVMName')]",
+              "adminUsername": "[parameters('vmUserName')]",
+              "adminPassword": "[parameters('vmPassword')]"
+            },
+            "storageProfile": {
+              "imageReference": {
+                "publisher": "[variables('imagePublisher')]",
+                "offer": "[variables('imageOffer')]",
+                "sku": "[variables('imageSKU')]",
+                "version": "latest"
+              },
+              "osDisk": {
+                "name": "osdisk",
+                "vhd": {
+                  "uri": "[concat('http://',variables('edgestorageAccountName'),'.blob.core.windows.net/vhds/myvmosdisk.vhd')]"
+                },
+                "caching": "ReadWrite",
+                "createOption": "FromImage"
+              }
+            },
+            "networkProfile": {
+              "networkInterfaces": [
+                {
+                  "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('edgeFENICName'))]",
+                  "properties": {
+                    "primary": true
+                  }
+                },
+                {
+                  "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('edgeBENICName'))]",
+                  "properties": {
+                    "primary": false
+                  }
+                }
+              ]
+            },
+            "diagnosticsProfile": {
+              "bootDiagnostics": {
+                "enabled": "true",
+                "storageUri": "[concat('http://',variables('edgestorageAccountName'),'.blob.core.windows.net')]"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "name": "[concat(variables('edgeVMName'),'/joinDomain')]",
+              "apiVersion": "[variables('apiVersion')]",
+              "location": "[resourceGroup().location]",
+              "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('edgeVMName'))]",
+                "[concat('Microsoft.Compute/virtualMachines/', variables('dcVMName'),'/extensions/createADForest')]"
+              ],
+              "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "JsonADDomainExtension",
+                "typeHandlerVersion": "1.0",
+                "settings": {
+                  "Name": "[parameters('domainName')]",
+                  "OUPath": "[parameters('ouPath')]",
+                  "User": "[concat(parameters('domainName'), '\\', parameters('domainUsername'))]",
+                  "Restart": "true",
+                  "Options": "[parameters('domainJoinOptions')]"
+                },
+                "protectedsettings": {
+                  "Password": "[parameters('domainPassword')]"
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "name": "[concat(variables('edgeVMName'),'/getlabfiles')]",
+              "apiVersion": "[variables('apiVersion')]",
+              "location": "[resourceGroup().location]",
+              "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('edgeVMName'))]",
+                "[concat('Microsoft.Compute/virtualMachines/', variables('edgeVMName'), '/extensions/joinDomain')]"
+              ],
+              "properties": {
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.8",
+                "settings": {
+                  "ModulesUrl": "[concat(parameters('assetLocation'),'getlabfiles.zip')]",
+                  "ConfigurationFunction": "getlabfiles.ps1\\getlabfiles",
+                  "Properties": {
+                    "MachineName": "[variables('edgeVMName')]"
+                  }
+                },
+                "protectedSettings": null
+              }
+            },
+            {
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "name": "[concat(variables('edgeVMName'),'/RunAutomation')]",
+              "apiVersion": "[variables('apiVersion')]",
+              "location": "[resourceGroup().location]",
+              "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('edgeVMName'))]",
+                "[concat('Microsoft.Compute/virtualMachines/', variables('edgeVMName'), '/extensions/getlabfiles')]"
+              ],
+              "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.3",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                  "fileUris": [
+                    "[variables('edgeCustomScriptFileUri')]"
+                  ],
+                  "commandToExecute": "[variables('edgeCommandToExecute')]"
+                },
+                "protectedSettings": null
+              }
+            }
+          ]
+        },
+        {
+          "type": "Microsoft.Compute/virtualMachines",
+          "name": "[variables('wacVMName')]",
+          "apiVersion": "[variables('apiVersion')]",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Storage/storageAccounts',variables('syncStorageAccountName'))]",
+            "[resourceId('Microsoft.Network/networkInterfaces', variables('wacNICName'))]"
+          ],
+          "properties": {
+            "hardwareProfile": {
+              "vmSize": "[parameters('wacVMSize')]"
+            },
+            "osProfile": {
+              "computerName": "[variables('wacVMName')]",
+              "adminUsername": "[parameters('vmUserName')]",
+              "adminPassword": "[parameters('vmPassword')]"
+            },
+            "storageProfile": {
+              "imageReference": {
+                "publisher": "[variables('imagePublisher')]",
+                "offer": "[variables('imageOffer')]",
+                "sku": "[variables('imageSKU')]",
+                "version": "latest"
+              },
+              "osDisk": {
+                "name": "osdisk",
+                "vhd": {
+                  "uri": "[concat('http://',variables('syncStorageAccountName'),'.blob.core.windows.net/vhds/myvmosdisk.vhd')]"
+                },
+                "caching": "ReadWrite",
+                "createOption": "FromImage"
+              }
+            },
+            "networkProfile": {
+              "networkInterfaces": [
+                {
+                  "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('wacNICName'))]"
+                }
+              ]
+            },
+            "diagnosticsProfile": {
+              "bootDiagnostics": {
+                "enabled": "true",
+                "storageUri": "[concat('http://',variables('syncStorageAccountName'),'.blob.core.windows.net')]"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "name": "[concat(variables('wacVMName'),'/joinDomain')]",
+              "apiVersion": "[variables('apiVersion')]",
+              "location": "[resourceGroup().location]",
+              "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('wacVMName'))]",
+                "[concat('Microsoft.Compute/virtualMachines/', variables('dcVMName'),'/extensions/createADForest')]"
+              ],
+              "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "JsonADDomainExtension",
+                "typeHandlerVersion": "1.0",
+                "settings": {
+                  "Name": "[parameters('domainName')]",
+                  "OUPath": "[parameters('ouPath')]",
+                  "User": "[concat(parameters('domainName'), '\\', parameters('domainUsername'))]",
+                  "Restart": "true",
+                  "Options": "[parameters('domainJoinOptions')]"
+                },
+                "protectedsettings": {
+                  "Password": "[parameters('domainPassword')]"
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "name": "[concat(variables('wacVMName'),'/getlabfiles')]",
+              "apiVersion": "[variables('apiVersion')]",
+              "location": "[resourceGroup().location]",
+              "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('wacVMName'))]",
+                "[concat('Microsoft.Compute/virtualMachines/', variables('wacVMName'), '/extensions/joinDomain')]"
+              ],
+              "properties": {
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.8",
+                "settings": {
+                  "ModulesUrl": "[concat(parameters('assetLocation'),'getlabfiles.zip')]",
+                  "ConfigurationFunction": "getlabfiles.ps1\\getlabfiles",
+                  "Properties": {
+                    "MachineName": "[variables('wacVMName')]"
+                  }
+                },
+                "protectedSettings": null
+              }
+            },
+            {
+              "type": "Microsoft.Compute/virtualMachines/extensions",
+              "name": "[concat(variables('wacVMName'),'/RunAutomation')]",
+              "apiVersion": "[variables('apiVersion')]",
+              "location": "[resourceGroup().location]",
+              "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('wacVMName'))]",
+                "[concat('Microsoft.Compute/virtualMachines/', variables('wacVMName'),'/extensions/getlabfiles')]"
+              ],
+              "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.3",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                  "fileUris": [
+                    "[variables('syncCustomScriptFileUri')]"
+                  ],
+                  "commandToExecute": "[variables('syncCommandToExecute')]"
+                },
+                "protectedSettings": null
+              }
+            }
+          ]
+        },
+        {
+          "type": "Microsoft.Resources/deployments",
+          "name": "UpdateVNetDNS",
+          "apiVersion": "2015-01-01",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', variables('dcVMName'),'/extensions/createADForest')]"
+          ],
+          "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+              "uri": "[variables('vnetwithDNSTemplateUri')]",
+              "contentVersion": "1.0.0.0"
+            },
+            "parameters": {
+              "location": {
+                "value": "[parameters('location')]"
+              },
+              "virtualNetworkName": {
+                "value": "[variables('virtualNetworkName')]"
+              },
+              "virtualNetworkAddressRange": {
+                "value": "[variables('virtualNetworkAddressRange')]"
+              },
+              "subnet1Name": {
+                "value": "[variables('feSubnetName')]"
+              },
+              "subnet1Range": {
+                "value": "[variables('feSubnet')]"
+              },
+              "subnet2Name": {
+                "value": "[variables('labSubnetName')]"
+              },
+              "subnet2Range": {
+                "value": "[variables('labSubnet')]"
+              },
+              "DNSServerAddress": {
+                "value": [
+                  "[variables('dcBEIP')]"
+                ]
+              }
+            }
+          }
+        }
+      ]
 }
