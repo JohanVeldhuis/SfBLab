@@ -88,7 +88,7 @@ while ($uniqueName -eq $false) {
     $dnsPrefix = "$machine" + "dns" + "$init" + "$counter" 
     if (Test-AzureRmDnsAvailability -DomainNameLabel $dnsPrefix -Location $loc) {
         $uniquename = $true
-        $feDNSVMName = $dnsPrefix
+        $adminDNSVMName = $dnsPrefix
     }
 } 
 
@@ -112,7 +112,7 @@ while ($uniqueName -eq $false) {
     $dnsPrefix = "$machine" + "dns" + "$init" + "$counter" 
     if (Test-AzureRmDnsAvailability -DomainNameLabel $dnsPrefix -Location $loc) {
         $uniquename = $true
-        $wacDNSVMName = $dnsPrefix
+        $syncDNSVMName = $dnsPrefix
     }
 } 
 
