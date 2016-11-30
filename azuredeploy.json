@@ -4,7 +4,6 @@
   "parameters": {
     "location": {
       "type": "string",
-      "defaultValue": "West Europe",
       "allowedValues": [
         "West US",
         "East US",
@@ -17,26 +16,26 @@
     },
     "dcDNSVMName": {
       "type": "string",
-      "defaultValue": "sfbdc01",
+      "defaultValue": "dckar08",
       "metadata": {
         "description": "Unique DNS prefix for the DC"
       }
     },
     "dcVMSize": {
       "type": "string",
-      "defaultValue": "Standard_D1",
+      "defaultValue": "Standard_D2",
       "metadata": {
         "description": "The size of the virtual machine"
       }
     },
-    "feDNSVMName": {
+    "adminDNSVMName": {
       "type": "string",
-      "defaultValue": "sfbfe01",
+      "defaultValue": "adminkar08",
       "metadata": {
         "description": "Unique DNS prefix for the ADMIN machine"
       }
     },
-    "feVMSize": {
+    "adminVMSize": {
       "type": "string",
       "defaultValue": "Standard_D2",
       "metadata": {
@@ -45,7 +44,7 @@
     },
     "edgeDNSVMName": {
       "type": "string",
-      "defaultValue": "sfbedge01",
+      "defaultValue": "edgekar08",
       "metadata": {
         "description": "Unique DNS prefix for the EDGE"
       }
@@ -57,14 +56,14 @@
         "description": "The size of the virtual machine"
       }
     },
-    "wacDNSVMName": {
+    "syncDNSVMName": {
       "type": "string",
-      "defaultValue": "sfbwac01",
+      "defaultValue": "synckar08",
       "metadata": {
         "description": "Unique DNS prefix for the SYNC machine"
       }
     },
-    "wacVMSize": {
+    "syncVMSize": {
       "type": "string",
       "defaultValue": "Standard_D2",
       "metadata": {
@@ -122,18 +121,18 @@
       "metadata": {
         "description": "The location of resources such as templates and DSC modules that the script is dependent"
       },
-      "defaultValue": "https://raw.githubusercontent.com/JohanVeldhuis/SfBLab/master/"
+      "defaultValue": "https://raw.githubusercontent.com/KevinRemde/AZInfraLabBase/master/"
     }
   },
   "variables": {
-    "dcVMName": "dc01",
-    "feVMName": "fe01",
-    "edgeVMName": "edge01",
-    "wacVMName": "wac01",
+    "dcVMName": "dc",
+    "adminVMName": "admin",
+    "edgeVMName": "edge",
+    "syncVMName": "sync",
     "dcStorageAccountName": "[concat(uniquestring(resourceGroup().id), variables('dcVMName'))]",
-    "adminStorageAccountName": "[concat(uniquestring(resourceGroup().id), variables('feVMName'))]",
+    "adminStorageAccountName": "[concat(uniquestring(resourceGroup().id), variables('adminVMName'))]",
     "edgeStorageAccountName": "[concat(uniquestring(resourceGroup().id), variables('edgeVMName'))]",
-    "syncStorageAccountName": "[concat(uniquestring(resourceGroup().id), variables('wacVMName'))]",
+    "syncStorageAccountName": "[concat(uniquestring(resourceGroup().id), variables('syncVMName'))]",
     "imagePublisher": "MicrosoftWindowsServer",
     "imageOffer": "WindowsServer",
     "imageSKU": "2012-R2-Datacenter",
@@ -142,22 +141,22 @@
     "feSubnetName": "feSubnet",
     "labSubnetName": "labSubnet",
     "dcNICName": "dcNIC",
-    "feNICName": "feNIC",
+    "adminNICName": "adminNIC",
     "edgeBENICName": "edgeBENIC",
     "edgeFENICName": "edgeFENIC",
-    "wacNICName": "wacNIC",
+    "syncNICName": "syncNIC",
     "dcPIPName": "dcPublicIP",
-    "fePIPName": "fePublicIP",
+    "adminPIPName": "adminPublicIP",
     "edgePIPName": "edgePublicIP",
-    "wacPIPName": "wacPublicIP",
+    "syncPIPName": "syncPublicIP",
     "virtualNetworkAddressRange": "192.168.0.0/16",
     "labSubnet": "192.168.10.0/24",
     "feSubnet": "192.168.200.0/24",
     "dcBEIP": "192.168.10.4",
-    "feBEIP": "192.168.10.20",
+    "adminBEIP": "192.168.10.20",
     "edgeBEIP": "192.168.10.254",
     "edgeFEIP": "192.168.200.4",
-    "wacBEIP": "192.168.10.10",
+    "syncBEIP": "192.168.10.10",
     "vnetID": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
     "feSubnetId": "[concat(variables('vnetID'),'/subnets/', variables('feSubnetName'))]",
     "labSubnetId": "[concat(variables('vnetID'),'/subnets/', variables('labSubnetName'))]",
