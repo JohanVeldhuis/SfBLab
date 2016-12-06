@@ -775,29 +775,6 @@
               "Password": "[parameters('domainPassword')]"
             }
           }
-        },
-        {
-          "type": "Microsoft.Compute/virtualMachines/extensions",
-          "name": "[concat(variables('edgeVMName'),'/getlabfiles')]",
-          "apiVersion": "[variables('apiVersion')]",
-          "location": "[resourceGroup().location]",
-          "dependsOn": [
-            "[concat('Microsoft.Compute/virtualMachines/', variables('edgeVMName'))]",
-            "[concat('Microsoft.Compute/virtualMachines/', variables('edgeVMName'), '/extensions/joinDomain')]"
-          ],
-          "properties": {
-            "publisher": "Microsoft.Powershell",
-            "type": "DSC",
-            "typeHandlerVersion": "2.11",
-            "settings": {
-              "ModulesUrl": "[concat(parameters('assetLocation'),'getlabfiles.zip')]",
-              "ConfigurationFunction": "getlabfiles.ps1\\getlabfiles",
-              "Properties": {
-                "MachineName": "[variables('edgeVMName')]"
-              }
-            },
-            "protectedSettings": null
-          }
         }
       ],
       "type": "Microsoft.Compute/virtualMachines"
