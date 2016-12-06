@@ -172,7 +172,7 @@
     "dcCustomScriptFileUri": "[concat(parameters('assetLocation'), variables('dcCustomScriptFileToRun'))]",
     "dcCommandToExecute": "[concat('powershell.exe -File', ' ', variables('dcCustomScriptFileToRun'))]",
     "feModulesURL": "[concat(parameters('assetLocation'),'PrepSfBFE.ps1.zip')]",
-    "feConfigurationFunction": "PrepSfbFE.ps1\\PrepSfBFE",
+    "feConfigurationFunction": "PrepSfbFE.ps1\\PrepSfbFE",
     "feCustomScriptFileToRun": "ConfigFE.ps1",
     "feCustomScriptFileUri": "[concat(parameters('assetLocation'), variables('feCustomScriptFileToRun'))]",
     "feCommandToExecute": "[concat('powershell.exe -File', ' ', variables('feCustomScriptFileToRun'))]",
