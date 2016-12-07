@@ -563,15 +563,8 @@
             "dependsOn": [
               "[concat('Microsoft.Compute/virtualMachines/', variables('dcVMName'))]",
               "[concat('Microsoft.Compute/virtualMachines/', variables('dcVMName'), '/extensions/createADForest')]"
-            ],
-            "settings": {
-              "Properties": [
-              ]
-
-            }
-
+            ]
           }
-
         },
         {
           "type": "Microsoft.Compute/virtualMachines/extensions",
@@ -763,14 +756,7 @@
             "dependsOn": [
               "[resourceId('Microsoft.Compute/virtualMachines', variables('feVMName'))]",
               "[concat('Microsoft.Compute/virtualMachines/', variables('feVMName'), '/extensions/joinDomain')]"
-            ],
-            "settings": {
-              "Properties": [
-              ]
-
-            }
-
-          }
+            ]          }
         }
       ]
     },
