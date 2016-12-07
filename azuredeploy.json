@@ -173,6 +173,7 @@
     "dcCommandToExecute": "[concat('powershell.exe -File', ' ', variables('dcCustomScriptFileToRun'))]",
     "feModulesURL": "[concat(parameters('assetLocation'),'PrepSfBFE.ps1.zip')]",
     "feConfigurationFunction": "PrepSfbFE.ps1\\PrepSfbFE",
+    "feConfigurationFunction2": "PrepSfbFE.ps1\\DownLoadIso",
     "feCustomScriptFileToRun": "ConfigFE.ps1",
     "feCustomScriptFileUri": "[concat(parameters('assetLocation'), variables('feCustomScriptFileToRun'))]",
     "feCommandToExecute": "[concat('powershell.exe -File', ' ', variables('feCustomScriptFileToRun'))]",
@@ -549,6 +550,26 @@
           }
         },
         {
+
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "name": "[concat(variables('dcVMName'),'/BGInfo')]",
+          "apiVersion": "2015-06-15",
+          "location": "[resourceGroup().location]",
+          "properties": {
+            "publisher": "Microsoft.Compute",
+            "type": "BGInfo",
+            "typeHandlerVersion": "2.1",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "Properties": [
+              ]
+
+            }
+
+          }
+
+        },
+        {
           "type": "Microsoft.Compute/virtualMachines/extensions",
           "name": "[concat(variables('dcVMName'),'/RunAutomation')]",
           "apiVersion": "[variables('apiVersion')]",
@@ -689,6 +710,58 @@
                 "AdminPassword": "[parameters('domainPassword')]"
               }
             }
+          }
+        },
+        {
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "name": "[concat(variables('feVMName'),'/PrepSfBFE')]",
+          "apiVersion": "[variables('apiVersion')]",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Compute/virtualMachines', variables('feVMName'))]",
+            "[concat('Microsoft.Compute/virtualMachines/', variables('feVMName'), '/extensions/joinDomain')]",
+            "[concat('Microsoft.Compute/virtualMachines/', variables('feVMName'), '/extensions/PrepSfbFE')]"
+          ],
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.11",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "ModulesUrl": "[variables('feModulesURL')]",
+              "ConfigurationFunction": "[variables('feConfigurationFunction2')]",
+              "Properties": {
+                "DomainName": "[parameters('domainName')]",
+                "AdminCreds": {
+                  "UserName": "[parameters('domainUsername')]",
+                  "Password": "PrivateSettingsRef:AdminPassword"
+                }
+              }
+            },
+            "protectedSettings": {
+              "Items": {
+                "AdminPassword": "[parameters('domainPassword')]"
+              }
+            }
+          }
+        },
+        {
+
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "name": "[concat(variables('feVMName'),'/BGInfo')]",
+          "apiVersion": "2015-06-15",
+          "location": "[resourceGroup().location]",
+          "properties": {
+            "publisher": "Microsoft.Compute",
+            "type": "BGInfo",
+            "typeHandlerVersion": "2.1",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "Properties": [
+              ]
+
+            }
+
           }
         }
       ]
