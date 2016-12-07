@@ -710,7 +710,7 @@
         },
         {
           "type": "Microsoft.Compute/virtualMachines/extensions",
-          "name": "[concat(variables('feVMName'),'/PrepSfBFE')]",
+          "name": "[concat(variables('feVMName'),'/DownloadIso')]",
           "apiVersion": "[variables('apiVersion')]",
           "location": "[resourceGroup().location]",
           "dependsOn": [
