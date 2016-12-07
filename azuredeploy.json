@@ -742,7 +742,6 @@
           }
         },
         {
-
           "type": "Microsoft.Compute/virtualMachines/extensions",
           "name": "[concat(variables('feVMName'),'/BGInfo')]",
           "apiVersion": "2015-06-15",
