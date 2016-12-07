@@ -555,15 +555,15 @@
           "name": "[concat(variables('dcVMName'),'/BGInfo')]",
           "apiVersion": "2015-06-15",
           "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', variables('dcVMName'))]",
+            "[concat('Microsoft.Compute/virtualMachines/', variables('dcVMName'), '/extensions/createADForest')]"
+          ],
           "properties": {
             "publisher": "Microsoft.Compute",
             "type": "BGInfo",
             "typeHandlerVersion": "2.1",
-            "autoUpgradeMinorVersion": true,
-            "dependsOn": [
-              "[concat('Microsoft.Compute/virtualMachines/', variables('dcVMName'))]",
-              "[concat('Microsoft.Compute/virtualMachines/', variables('dcVMName'), '/extensions/createADForest')]"
-            ]
+            "autoUpgradeMinorVersion": true
           }
         },
         {
