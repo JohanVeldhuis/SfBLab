@@ -560,6 +560,10 @@
             "type": "BGInfo",
             "typeHandlerVersion": "2.1",
             "autoUpgradeMinorVersion": true,
+            "dependsOn": [
+              "[concat('Microsoft.Compute/virtualMachines/', variables('dcVMName'))]",
+              "[concat('Microsoft.Compute/virtualMachines/', variables('dcVMName'), '/extensions/createADForest')]"
+            ],
             "settings": {
               "Properties": [
               ]
@@ -756,6 +760,10 @@
             "type": "BGInfo",
             "typeHandlerVersion": "2.1",
             "autoUpgradeMinorVersion": true,
+            "dependsOn": [
+              "[resourceId('Microsoft.Compute/virtualMachines', variables('feVMName'))]",
+              "[concat('Microsoft.Compute/virtualMachines/', variables('feVMName'), '/extensions/joinDomain')]"
+            ],
             "settings": {
               "Properties": [
               ]
