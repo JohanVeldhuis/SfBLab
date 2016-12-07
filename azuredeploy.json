@@ -747,15 +747,16 @@
           "name": "[concat(variables('feVMName'),'/BGInfo')]",
           "apiVersion": "2015-06-15",
           "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Compute/virtualMachines', variables('feVMName'))]",
+            "[concat('Microsoft.Compute/virtualMachines/', variables('feVMName'), '/extensions/joinDomain')]"
+          ],
           "properties": {
             "publisher": "Microsoft.Compute",
             "type": "BGInfo",
             "typeHandlerVersion": "2.1",
-            "autoUpgradeMinorVersion": true,
-            "dependsOn": [
-              "[resourceId('Microsoft.Compute/virtualMachines', variables('feVMName'))]",
-              "[concat('Microsoft.Compute/virtualMachines/', variables('feVMName'), '/extensions/joinDomain')]"
-            ]          }
+            "autoUpgradeMinorVersion": true
+          }
         }
       ]
     },
