@@ -550,7 +550,6 @@
           }
         },
         {
-
           "type": "Microsoft.Compute/virtualMachines/extensions",
           "name": "[concat(variables('dcVMName'),'/BGInfo')]",
           "apiVersion": "2015-06-15",
